@@ -18,25 +18,34 @@ class MoviesAdapter @Inject constructor() : RecyclerView.Adapter<MoviesAdapter.V
 
     private lateinit var binding: ItemMoviesBinding
     private lateinit var context: Context
+    private var onItemClickListneer: ((MoviesListResponse.Result) -> Unit)? = null
 
-    inner class ViewHolder(): RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder() : RecyclerView.ViewHolder(binding.root) {
 
-        fun set(item: MoviesListResponse.Result){
+        fun set(item: MoviesListResponse.Result) {
             binding.apply {
                 tvMovieName.text = item.originalTitle
                 tvLang.text = item.originalLanguage
                 tvRate.text = item.voteAverage.toString()
                 tvMovieDateRelease.text = item.releaseDate
-                val moviePoster = POSTER_BASE_URL +item.posterPath
-                imgMovie.load(moviePoster){
+                val moviePoster = POSTER_BASE_URL + item.posterPath
+                imgMovie.load(moviePoster) {
                     crossfade(true)
                     placeholder((R.drawable.poster_placeholder))
                     scale(Scale.FILL)
+                }
+                root.setOnClickListener {
+                    onItemClickListneer?.let {
+                        it(item)
+                    }
                 }
             }
         }
     }
 
+    fun setOnItemClickListener(listener: (MoviesListResponse.Result) -> Unit) {
+        onItemClickListneer = listener
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         binding = ItemMoviesBinding.inflate(inflater, parent, false)
@@ -47,7 +56,7 @@ class MoviesAdapter @Inject constructor() : RecyclerView.Adapter<MoviesAdapter.V
     override fun getItemCount(): Int = differ.currentList.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-       holder.set(differ.currentList[position])
+        holder.set(differ.currentList[position])
         holder.setIsRecyclable(false)
     }
 
@@ -68,4 +77,6 @@ class MoviesAdapter @Inject constructor() : RecyclerView.Adapter<MoviesAdapter.V
 
     }
     val differ = AsyncListDiffer(this, differCallback)
+
 }
+

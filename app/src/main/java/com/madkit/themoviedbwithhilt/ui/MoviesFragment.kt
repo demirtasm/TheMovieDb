@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.madkit.themoviedbwithhilt.R
 import com.madkit.themoviedbwithhilt.adapter.MoviesAdapter
@@ -59,6 +60,13 @@ class MoviesFragment : Fragment() {
                                 rlMovies.apply {
                                     layoutManager = LinearLayoutManager(requireContext())
                                     adapter = moviesAdapter
+                                }
+                                moviesAdapter.setOnItemClickListener {
+                                    val direction =
+                                        MoviesFragmentDirections.actionMoviesFragmentToMovieDetailsFragment(
+                                            it.id
+                                        )
+                                    findNavController().navigate(direction)
                                 }
                             }
                         }
